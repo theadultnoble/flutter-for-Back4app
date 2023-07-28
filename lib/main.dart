@@ -69,7 +69,7 @@ class _ContactsAppState extends State<ContactsApp> {
         String name = '';
         String phoneNumber = '';
         String address = '';
-        String postalCode = '';
+        String zipCode = '';
 
         return AlertDialog(
           title: const Text('Add Contact'),
@@ -97,7 +97,7 @@ class _ContactsAppState extends State<ContactsApp> {
               TextField(
                 decoration: const InputDecoration(labelText: 'Postal Code'),
                 onChanged: (value) {
-                  postalCode = value;
+                  zipCode = value;
                 },
               ),
             ],
@@ -116,7 +116,7 @@ class _ContactsAppState extends State<ContactsApp> {
                     name: name,
                     phoneNumber: phoneNumber,
                     address: address,
-                    postalCode: postalCode,
+                    zipCode: zipCode,
                   ));
                 });
                 Navigator.of(context).pop();
@@ -134,12 +134,12 @@ class Contact {
   final String name;
   final String phoneNumber;
   final String address;
-  final String postalCode;
+  final String zipCode;
 
   Contact({
     required this.name,
     required this.phoneNumber,
     required this.address,
-    required this.postalCode,
+    required this.zipCode,
   });
 }

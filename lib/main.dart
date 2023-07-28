@@ -1,11 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
-void main() {
-  runApp(ContactsApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final keyApplicationId = 'HImV7Cqpv87FD9CRtBfdACdYMhxnDWG53fxwxVrx';
+  final keyClientKey = 'WMW3C1WjnbvLzXhqkursByoPlneevA9vSEhbzKrm';
+  final keyParseServerUrl = 'https://parseapi.back4app.com';
+
+  await Parse().initialize(keyApplicationId, keyParseServerUrl,
+      clientKey: keyClientKey, debug: true);
+
+  runApp(MaterialApp(
+    title: 'Contacts',
+    theme: ThemeData(
+      primaryColor: Colors.white,
+    ),
+    home: ContactsApp(),
+  ));
 }
 
 class ContactsApp extends StatefulWidget {
+  const ContactsApp({Key? key}) : super(key: key);
+
   @override
+  // ignore: library_private_types_in_public_api
   _ContactsAppState createState() => _ContactsAppState();
 }
 
@@ -14,34 +32,32 @@ class _ContactsAppState extends State<ContactsApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Contacts App'),
-        ),
-        body: ListView.builder(
-          itemCount: contacts.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(contacts[index].name),
-              subtitle: Text(contacts[index].phoneNumber),
-              trailing: IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () {
-                  setState(() {
-                    contacts.removeAt(index);
-                  });
-                },
-              ),
-            );
-          },
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            _showAddContactDialog();
-          },
-          child: Icon(Icons.add),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Contacts'),
+      ),
+      body: ListView.builder(
+        itemCount: contacts.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(contacts[index].name),
+            subtitle: Text(contacts[index].phoneNumber),
+            trailing: IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () {
+                setState(() {
+                  contacts.removeAt(index);
+                });
+              },
+            ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _showAddContactDialog();
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -56,30 +72,30 @@ class _ContactsAppState extends State<ContactsApp> {
         String postalCode = '';
 
         return AlertDialog(
-          title: Text('Add Contact'),
+          title: const Text('Add Contact'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                decoration: InputDecoration(labelText: 'Name'),
+                decoration: const InputDecoration(labelText: 'Name'),
                 onChanged: (value) {
                   name = value;
                 },
               ),
               TextField(
-                decoration: InputDecoration(labelText: 'Phone Number'),
+                decoration: const InputDecoration(labelText: 'Phone Number'),
                 onChanged: (value) {
                   phoneNumber = value;
                 },
               ),
               TextField(
-                decoration: InputDecoration(labelText: 'Address'),
+                decoration: const InputDecoration(labelText: 'Address'),
                 onChanged: (value) {
                   address = value;
                 },
               ),
               TextField(
-                decoration: InputDecoration(labelText: 'Postal Code'),
+                decoration: const InputDecoration(labelText: 'Postal Code'),
                 onChanged: (value) {
                   postalCode = value;
                 },
@@ -91,7 +107,7 @@ class _ContactsAppState extends State<ContactsApp> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -105,7 +121,7 @@ class _ContactsAppState extends State<ContactsApp> {
                 });
                 Navigator.of(context).pop();
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         );

@@ -62,7 +62,7 @@ class _ContactsAppState extends State<ContactsApp> {
     );
   }
 
-  void _showAddContactDialog() {
+  void _showAddContactDialog() async {
     showDialog(
       context: context,
       builder: (context) {
@@ -70,6 +70,7 @@ class _ContactsAppState extends State<ContactsApp> {
         String phoneNumber = '';
         String address = '';
         String zipCode = '';
+        String birthDay = '';
 
         return AlertDialog(
           title: const Text('Add Contact'),
@@ -95,9 +96,15 @@ class _ContactsAppState extends State<ContactsApp> {
                 },
               ),
               TextField(
-                decoration: const InputDecoration(labelText: 'Postal Code'),
+                decoration: const InputDecoration(labelText: 'Zip Code'),
                 onChanged: (value) {
                   zipCode = value;
+                },
+              ),
+              TextField(
+                decoration: const InputDecoration(labelText: 'Birthday'),
+                onChanged: (value) {
+                  birthDay = value;
                 },
               ),
             ],
@@ -110,15 +117,44 @@ class _ContactsAppState extends State<ContactsApp> {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 setState(() {
                   contacts.add(Contact(
                     name: name,
                     phoneNumber: phoneNumber,
                     address: address,
                     zipCode: zipCode,
+                    birthDay: birthDay,
                   ));
                 });
+                // Save the contact to Back4App
+                final contact = ParseObject('Contacts');
+                contact.set('name', name);
+                contact.set('phoneNumber', phoneNumber);
+                contact.set('address', address);
+                contact.set('zipCode', zipCode);
+                contact.set('birthDay', birthDay);
+
+                final ParseResponse parseResponse = await contact.save();
+                String? contactId = null; // Initialize contactId to null
+
+                if (parseResponse.success) {
+                  contactId =
+                      (parseResponse.results!.first as ParseObject).objectId!;
+                  print('Object created: $contactId');
+                } else {
+                  print(
+                      'Object created with failed: ${parseResponse.error.toString()}');
+                }
+
+                // Save the birthday to Back4App
+                if (contactId != null) {
+                  final birthday = ParseObject('Birthdays');
+                  birthday.set('contactID', contactId);
+                  birthday.set('birthDay', birthDay);
+                  await birthday.save();
+                }
+
                 Navigator.of(context).pop();
               },
               child: const Text('Save'),
@@ -135,11 +171,23 @@ class Contact {
   final String phoneNumber;
   final String address;
   final String zipCode;
+  final String birthDay;
 
   Contact({
     required this.name,
     required this.phoneNumber,
     required this.address,
     required this.zipCode,
+    required this.birthDay,
+  });
+}
+
+class Birthday {
+  final String contactId;
+  final String birthDay;
+
+  Birthday({
+    required this.contactId,
+    required this.birthDay,
   });
 }
